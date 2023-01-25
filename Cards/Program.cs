@@ -1,10 +1,21 @@
 ﻿internal class Program
 {
+    private static string line;
+
     private static void Main(string[] args)
     {
         Console.WriteLine("Hello, World!");
         // TODO Read input from text file
-        var line = "Player1:JS,2S,6C,3C,2H";
+        string[] lines = File.ReadAllLines(@"C:\Users\Matthew\Desktop\CardPlayers.txt");
+        Console.WriteLine("Contents of CardPlayers.txt = ");
+        foreach (string line in lines)
+        {
+            Console.WriteLine("\t" + line);
+        }
+        Console.WriteLine("Press any key to exit.");
+        //Console.ReadKey();
+
+        //var line = "Player1:JS,2S,6C,3C,2H";
         var winner = CalculateWinner(new List<string> { line });
         //var A = Console.ReadLine();
         Console.ReadLine();
