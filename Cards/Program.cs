@@ -1,9 +1,14 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 
 internal class Program
 {
     private static string? line;
+
+    public static IOrderedEnumerable<int> Array { get; private set; }
 
     private static void Main(string[] args)
     {
@@ -40,9 +45,33 @@ internal class Program
     //             */
     //        }
     //        var i = new int[] { 2, 11, 11, 9, 3 };
-private static List<PlayerHand> GetPlayerDetails(string[] lines)
+public class PlayerResult
     {
+        string Name;
+        int score;
+    }
+    private static List<PlayerHand> GetPlayerDetails(string[] lines)
+    {
+
+//        Outside of all your loops, create an object to hold them maybe a dictionary < string,in> for < name, score >
+
+//Or a list of PlayerResult
+
+//Publoc class PlayerResult
+//    {
+//        String name …;
+//        Int score …;
+//    }
+//    And then add each player name and result to that list
+
+
+
+            var result = new List<PlayerHand>();
         var allPlayers = new List<PlayerHand>();
+
+        //var player = lines.Substring(0, line.IndexOf(':'));
+        //var cards = lines.Substring(line.IndexOf(':') + 1).Split(',').ToList();
+
         foreach (string line in lines)
         {
             var player = line.Substring(0, line.IndexOf(':'));
@@ -52,68 +81,115 @@ private static List<PlayerHand> GetPlayerDetails(string[] lines)
             //var card = line.Substring();
             var d = cards.Distinct();
 
-
+            //var i = new int[] { };
             //var str = cards.Split(',');
+            var i = new int[] { };
+            //var intArray = new List<int>();
+            var intArray = Array.DefaultIfEmpty<int>();
             foreach (var card in cards)
             {
                 //construct an int array that correlates to the values of the cards ignoring the suit
                 //
 
-                var intArray = new List<int>();
-                switch (card[0])
-                {
-                    case 'A':
-                        intArray.Add(11);
+                var str = "2D,AS,AD,9H,3C";
+
+                //var cards = str.Split(',');
+                //foreach (var card in cards)
+                //{
+                    //construct an int array that correlates to the values of the cards ignoring the suit
+                    //
+
+                    var count = 0;
+                    switch (card[0])
+                    {
+                        case 'A':
+                            //intArray.Add(11);
+                        i = intArray.Append(11).ToArray();
+                        count++;
                         break;
-                    case '2':
-                        intArray.Add(2);
+                        case 'J':
+                            //intArray.Add(11);
+                        i = intArray.Append(11).ToArray();
+                        count++;
                         break;
-                    case '3':
-                        intArray.Add(3);
-                        break;
-                    case '4':
-                        intArray.Add(4);
-                        break;
-                    case '5':
-                        intArray.Add(5);
-                        break;
-                    case '6':
-                        intArray.Add(6);
-                        break;
-                    case '7':
-                        intArray.Add(7);
-                        break;
-                    case '8':
-                        intArray.Add(8);
-                        break;
-                    case '9':
-                        intArray.Add(9);
-                        break;
-                    //case '10':
-                    //    intArray.Add(10);
-                    //    break;
-                    case 'J':
-                        intArray.Add(11);
-                        intArray.Insert(0, 0);
-                        break;
-                    case 'Q':
-                        intArray.Add(12);
-                        break;
-                    case 'K':
-                        intArray.Add(13);
+                        case '2':
+                        //intArray.Add(2);
+                        i = intArray.Append(2).ToArray();
+                        count++;
                         break;
                 }
                 /*
                  * more code here
                  * 
                  */
-                var array = intArray.ToArray();
-                array.Order();
                 
+                //}
+                
+                //i = intArray.Append(11).ToArray();
+
+
+                //var intArray = new List<int>();
+                //switch (card[0])
+                //{
+                //    case 'A':
+                //        intArray.Add(11);
+                //        break;
+                //    case '2':
+                //        intArray.Add(2);
+                //        break;
+                //    case '3':
+                //        intArray.Add(3);
+                //        break;
+                //    case '4':
+                //        intArray.Add(4);
+                //        break;
+                //    case '5':
+                //        intArray.Add(5);
+                //        break;
+                //    case '6':
+                //        intArray.Add(6);
+                //        break;
+                //    case '7':
+                //        intArray.Add(7);
+                //        break;
+                //    case '8':
+                //        intArray.Add(8);
+                //        break;
+                //    case '9':
+                //        intArray.Add(9);
+                //        break;
+                //case '10':
+                //    intArray.Add(10);
+                //    break;
+                //    case 'J':
+                //        intArray.Add(11);
+                //       var j = card[0+1];
+                //        break;
+                //    case 'Q':
+                //        intArray.Add(12);
+                //        break;
+                //    case 'K':
+                //        intArray.Add(13);
+                //        break;
+
+                //   default:
+                //        intArray.Add(10);
+                //        break;
+                //}
+                /*
+                 * more code here
+                 * 
+                 */
+
+
+                //i = intArray.ToArray();
+
+                //Array = i.Order();
+
                 //var threeMaxNum = array.Take(3);
-                score = intArray.Sum();
+                //score = i.Sum();
             }
-            var i = new int[] {11, 2, 6, 3, 2};
+            //var i = new int[] {11, 2, 6, 3, 2};
 
 
             foreach (var card in cards)
