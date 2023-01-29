@@ -1,94 +1,54 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 internal class CardGame
 {
-    private static string? line;
-
-    public static IOrderedEnumerable<int> Array { get; private set; }
-
     private static void Main(string[] args)
     {
-        string[] lines = File.ReadAllLines(@"C:\Users\Matthew\Desktop\CardPlayers.txt");
-        Console.WriteLine("Contents of CardPlayers.txt = ");
-        var allPlayerHands = GetPlayerDetails(lines);
-
-        Console.WriteLine("Press any key to exit.");
-
-        //Console.ReadKey();
-
-        //var line = "Player1:JS,2S,6C,3C,2H";
-        // var winner = CalculateWinner(new List<string> { line });
-        //var A = Console.ReadLine();
-        Console.ReadLine();
-    }
-    //var str = "2D,AS,AD,9H,3C";
-
-    //var cards = str.Split(',');
-    //        foreach (var card in cards)
-    //        {
-    //            //construct an int array that correlates to the values of the cards ignoring the suit
-    //            //
-    //            var intArray = new List<int>();
-    //            switch (card[0])
-    //            {
-    //                case 'a':
-    //                    intArray.Add(11);
-    //                    break;
-    //            }
-    //            /*
-    //             * more code here
-    //             * 
-    //             */
-    //        }
-    //        var i = new int[] { 2, 11, 11, 9, 3 };
-    public class PlayerResult
-    {
-       public string Name { get; set; }
-       public int score { get; set; }
-    }
-    private static List<PlayerHand> GetPlayerDetails(string[] lines)
-    {
-
-        //        Outside of all your loops, create an object to hold them maybe a dictionary < string,in> for < name, score >
-
-        //Or a list of PlayerResult
-
-        //Publoc class PlayerResult
-        //    {
-        //        String name …;
-        //        Int score …;
-        //    }
-        //    And then add each player name and result to that list
-
-        int winnerScore = 0;
-        string winnerName = "";
-        int actualWinner = 0;
-        int win = 0;
-
-        //var result = new List<PlayerHand>();
-        var allPlayers = new List<PlayerHand>();
-
-        foreach (string line in lines)
+        try
         {
-            var player = line.Substring(0, line.IndexOf(':'));
-            var cards = line.Substring(line.IndexOf(':') + 1).Split(',').ToList();
-            int score = CardGame.CalculateScore(cards);
+            //Reading all the lines in the CardPlayers.txt file
+            string[] lines = File.ReadAllLines(@"C:\Users\Matthew\Desktop\CardPlayers.txt");
+            Console.WriteLine("Contents of CardPlayers.txt = ");
 
-            if (winnerScore <= score)
+            int winnerScore = 0;
+            string winnerName = "";
+            //int suitScore = 0;
+            int win = 0;
+            var items = new List<object>();
+
+
+            foreach (string line in lines)
             {
-                if (winnerScore == score)
-                {
-                    winnerName = winnerName + "," + player;
-                }
-                else
+                var player = line.Substring(0, line.IndexOf(':'));
+                var cards = line.Substring(line.IndexOf(':') + 1).Split(',').ToList();
+                int playerScore = CardGame.CalculateScore(cards);
+                int suitScore = CardGame.CalculateWinner(cards);
+
+                if (winnerScore == playerScore && (suitScore < playerScore))
                 {
                     winnerName = player;
                 }
-                winnerScore = score;
+                else if (winnerScore < playerScore)
+                {
+                    winnerName = player;
+                    winnerScore = playerScore;
+                }
+                //if (winnerScore == playerScore)
+                //{
+                //    winnerName = winnerName + "," + player;
+                //}
+                //else
+                //{
+                //    winnerName = player;
+                //}
+                //winnerScore = playerScore;
                 //if (winnerScore <= win)
                 //{
                 //    if (winnerScore == win)
@@ -108,30 +68,59 @@ internal class CardGame
                 //        Console.WriteLine(actualWinner);
                 //    }
                 //}
+
+
+                //Console.WriteLine(winnerScore);
+                Console.WriteLine(winnerName + ": " + winnerScore + " SuitScore: " + suitScore);
+                //Console.WriteLine(suitScore);
+
+                items.Add(winnerName + ": " + winnerScore + " SuitScore: " + suitScore);
+
+                //Console.ReadLine();OrderItems.Select(o => o.ToString()
             }
 
-            Console.WriteLine(winnerScore);
-            Console.WriteLine(winnerName);
-            Console.WriteLine(actualWinner);
+            //List<object> itemResult = new List<object>();
+            //var testing = "";
 
-            //card use switch case
-            //var card = line.Substring();
-            //var d = cards.Distinct();
+            //for (int i = 0; i < items.Count; i++)
+            //{
+            //    testing = items[i].ToString();
 
+            //}
 
+            //var displayItems = "";
+            //foreach (var itemResult in stringArray)
+            //{
+            //    Console.WriteLine(itemResult);
+            //    displayItems = itemResult;
 
-            //allPlayers.Add(new PlayerHand { Name = player, Cards = cards });
+            //}
+            //var test = items.ForEach(item => items.Take(0));
 
+            //
+            string item = string.Join("\n", items);
+            string createText = "Card Game Results " + Environment.NewLine + item;
+
+            File.WriteAllText(@"C:\Users\Matthew\Desktop\CardGame.txt", createText);
+            Console.WriteLine("Press any key to exit.");
+        }catch (FileNotFoundException e)
+        {
+            Console.WriteLine("File does not exist or cannot find the file. Please create the file with random players and their cards.", e.ToString());
         }
-        return allPlayers;
+
     }
 
     private static int CalculateScore(List<string> cards)
     {
+        /*This part took a wile to figure out because I first tried getting each players hands of cards,
+        and then going through it with the foreach loop. The foreach loop worked but everytime it stored the value in [0]
+        it kept overwriting the next value in the [0]. So the first letter is J which is 11 then it would store 11 in [0].
+        then when it goes to the next number which is a 2 then it would store that in [0] and then 11 would be gone so i changed to to a standard
+        for loop and it fixed my problem.
+        */
         var intArray = new List<int>();
         for (int i = 0; i < cards.Count; i++)
         {
-            //construct an int array that correlates to the values of the cards ignoring the suit
             char cardValue = cards[i][0];
             switch (cardValue)
             {
@@ -176,31 +165,20 @@ internal class CardGame
                     break;
             }
         }
+        // Here I sort the array which sorts it from smallest to biggest, that is why i use the reverse in the next line to change it to biggest to smallest.
         intArray.Sort();
         intArray.Reverse();
-
-        int score = intArray.Take(3).Sum();
-        return score;
+        //so that with this next line i can take the first 3 biggest items from the array and then sum them up.
+        int playerScore = intArray.Take(3).Sum();
+        return playerScore;
     }
 
     private static int CalculateWinner(List<string> cards)
     {
-        //foreach (var item in list)
-        //{
-        //    var index = item.IndexOf(':');
-        //    var name = item.Substring(0, index - 1);
-        //    // split the rest of the string starting at the index, split the rest of the sting from JS to 2H.
-        //    // split method to do the splitting, it will generate a string array.
-        //    //char[] separator = { ',', ' ' };
-        //    //string[] cards = item.Split((char)index);
-        //    //string[] card = item.Split(separator);
-        //}
-
-
+        // This is where i calculate the suit value. I used the same logic as in the CalculateScore method.
         var intArray = new List<int>();
         for (int i = 0; i < cards.Count; i++)
         {
-            //construct an int array that correlates to the values of the cards ignoring the suit
             char cardValue = cards[i][1];
             switch (cardValue)
             {
@@ -218,132 +196,11 @@ internal class CardGame
                     break;
             }
         }
+        // Here I sort the array which sorts it from smallest to biggest, that is why i use the reverse in the next line to change it to biggest to smallest.
         intArray.Sort();
         intArray.Reverse();
-
-        int score = intArray.Take(3).Sum();
-        return score;
-
+        //so that with this next line i can take the first 3 biggest items from the array and then sum them up.
+        int suitScore = intArray.Take(3).Sum();
+        return suitScore;
     }
 }
-
-public class PlayerHand
-{
-    public string Name { get; set; }
-    public List<string> Cards { get; set; }
-}
-
-//internal class Program
-//{
-
-//}
-//public class Program
-//{
-
-//    //Player1:JS,2S,6C,3C,2H
-//    //Player2:6D,8C,6D,AH,8H
-//    //Player3:5H,AC,4D,9S,10C
-//    //Player4:3C,8S,5D,JC,8D
-//    //Player5:KC,2C,QD,7H,4H
-
-
-//    public static void Main()
-//    {
-
-//        string[] playerData = Program.readDataFromFile();
-//        int winnerScore = 0;
-//        string winnerName = "";
-//        for (int i = 0; i < 5; i++)
-//        {
-//            string[] data = playerData[i].Split(':');
-//            string player = data[0];
-//            string cards = data[1];
-//            int score = Program.calculateScore(cards);
-
-//            if (winnerScore <= score)
-//            {
-//                if (winnerScore == score)
-//                {
-//                    winnerName = winnerName + "," + player;
-//                }
-//                else
-//                {
-//                    winnerName = player;
-//                }
-//                winnerScore = score;
-//            }
-//        }
-
-//        System.Console.WriteLine(winnerScore);
-//        System.Console.WriteLine(winnerName);
-//    }
-
-//    public static string[] readDataFromFile()
-//    {
-//        return new string[5] {
-//        "Player1:JS,2S,6C,3C,2H",
-//        "Player2:6D,8C,6D,AH,8H",
-//        "Player3:5H,AC,4D,9S,10C",
-//        "Player4:3C,8S,5D,JC,8D",
-//        "Player5:KC,2C,QD,7H,4H"};
-//    }
-
-//    public static int calculateScore(string data)
-//    {
-//        string[] cards = data.Split(',');
-
-//        int score = 0;
-//        for (int i = 0; i < 5; i++)
-//        {
-//            char cardValue = cards[i][0];
-
-//            switch (cardValue)
-//            {
-//                case 'A':
-//                    score += 11;
-//                    break;
-//                case '2':
-//                    score += 2;
-//                    break;
-//                case '3':
-//                    score += 3;
-//                    break;
-//                case '4':
-//                    score += 4;
-//                    break;
-//                case '5':
-//                    score += 5;
-//                    break;
-//                case '6':
-//                    score += 6;
-//                    break;
-//                case '7':
-//                    score += 7;
-//                    break;
-//                case '8':
-//                    score += 8;
-//                    break;
-//                case '9':
-//                    score += 9;
-//                    break;
-//                //case "10":
-//                //    score += 10;
-//                //    break;
-//                case 'J':
-//                    score += 11;
-//                    break;
-//                case 'Q':
-//                    score += 12;
-//                    break;
-//                case 'K':
-//                    score += 13;
-//                    break;
-//            }
-//        }
-//        return score;
-//    }
-
-//    public void SaveToFile(string data)
-//    {
-//    }
-//}
