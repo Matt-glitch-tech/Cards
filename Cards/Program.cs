@@ -21,16 +21,21 @@ internal class CardGame
             string winnerName = "";
             int winnerSuitScore = 0;
             var items = new List<object>();
+            //string[] playerWinner = lines;
+            
+
 
 
             foreach (string line in lines)
             {
                 var player = line.Substring(0, line.IndexOf(':'));
-                var cards = line.Substring(line.IndexOf(':') + 1).Split(',').ToList();
+                var cards = line.ToUpper().Substring(line.IndexOf(':') + 1).Split(',').ToList();
+                string[] playerWinner = PlayersAndHands(lines);
                 int playerScore = CardGame.CalculateScore(cards);
-                int suitScore = CardGame.CalculateWinner(cards);
+                int suitScore = CardGame.CalculateSuit(cards);
+               
 
-                if(winnerScore <= playerScore)
+                if (winnerScore <= playerScore)
                 {
                     if(winnerScore == playerScore)
                     {
@@ -46,6 +51,11 @@ internal class CardGame
                         winnerName = player;
                         winnerScore= playerScore;
 
+                    }
+                    if(playerScore == suitScore)
+                    {
+
+                        Console.WriteLine(player + "," + player);
                     }
                 }
 
@@ -105,6 +115,12 @@ internal class CardGame
             Console.WriteLine("File does not exist or cannot find the file. Please create the file with random players and their cards.", e.ToString());
             Console.WriteLine("Press any key to exit.");
         }
+    }
+
+    private static string[] PlayersAndHands(string[] lines)
+    {
+
+        return null;
     }
 
     private static int CalculateScore(List<string> cards)
@@ -170,7 +186,7 @@ internal class CardGame
         return playerScore;
     }
 
-    private static int CalculateWinner(List<string> cards)
+    private static int CalculateSuit(List<string> cards)
     {
         // This is where i calculate the suit value. I used the same logic as in the CalculateScore method.
         var intArray = new List<int>();
