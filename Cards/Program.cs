@@ -19,8 +19,7 @@ internal class CardGame
 
             int winnerScore = 0;
             string winnerName = "";
-            //int suitScore = 0;
-            int win = 0;
+            int winnerSuitScore = 0;
             var items = new List<object>();
 
 
@@ -31,15 +30,34 @@ internal class CardGame
                 int playerScore = CardGame.CalculateScore(cards);
                 int suitScore = CardGame.CalculateWinner(cards);
 
-                if (winnerScore == playerScore && (suitScore < playerScore))
+                if(winnerScore <= playerScore)
                 {
-                    winnerName = player;
+                    if(winnerScore == playerScore)
+                    {
+                        if(winnerSuitScore <= suitScore)
+                        {
+                            winnerName = player;
+                            winnerSuitScore = suitScore;
+                            winnerScore = playerScore;
+                        }                        
+                    }
+                    else
+                    {
+                        winnerName = player;
+                        winnerScore= playerScore;
+
+                    }
                 }
-                else if (winnerScore < playerScore)
-                {
-                    winnerName = player;
-                    winnerScore = playerScore;
-                }
+
+                //if (winnerScore == playerScore && (suitScore < playerScore))
+                //{
+                //    winnerName = player;
+                //}
+                //else if (winnerScore < playerScore)
+                //{
+                //    winnerName = player;
+                //    winnerScore = playerScore;
+                //}
                 //if (winnerScore == playerScore)
                 //{
                 //    winnerName = winnerName + "," + player;
@@ -69,35 +87,14 @@ internal class CardGame
                 //    }
                 //}
 
-
-                //Console.WriteLine(winnerScore);
                 Console.WriteLine(winnerName + ": " + winnerScore + " SuitScore: " + suitScore);
-                //Console.WriteLine(suitScore);
-
                 items.Add(winnerName + ": " + winnerScore + " SuitScore: " + suitScore);
-
-                //Console.ReadLine();OrderItems.Select(o => o.ToString()
             }
 
-            //List<object> itemResult = new List<object>();
-            //var testing = "";
-
-            //for (int i = 0; i < items.Count; i++)
-            //{
-            //    testing = items[i].ToString();
-
-            //}
-
-            //var displayItems = "";
-            //foreach (var itemResult in stringArray)
-            //{
-            //    Console.WriteLine(itemResult);
-            //    displayItems = itemResult;
-
-            //}
-            //var test = items.ForEach(item => items.Take(0));
-
-            //
+            /* I tried to display the list of results for each player and their scores. This took me a while to get right because i tried using a foreach loop,
+             to get the data and then display it and save it to a file but then it would only save the last line of the player. So had to google quite a bit to find,
+             different answers and i finally found the join which is so simple that it didn't occure to me the first time to just join them at a new line.
+            */
             string item = string.Join("\n", items);
             string createText = "Card Game Results " + Environment.NewLine + item;
 
@@ -106,8 +103,8 @@ internal class CardGame
         }catch (FileNotFoundException e)
         {
             Console.WriteLine("File does not exist or cannot find the file. Please create the file with random players and their cards.", e.ToString());
+            Console.WriteLine("Press any key to exit.");
         }
-
     }
 
     private static int CalculateScore(List<string> cards)
@@ -151,9 +148,9 @@ internal class CardGame
                 case '9':
                     intArray.Add(9);
                     break;
-                //case '1':
-                //    intArray.Add(10);
-                //    break;
+                case '1':
+                    intArray.Add(10);
+                    break;
                 case 'J':
                     intArray.Add(11);
                     break;
