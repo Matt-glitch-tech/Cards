@@ -7,26 +7,69 @@ using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
+using CommandLine;
+using System.Windows.Input;
+using System.Xml.Linq;
+
+//public interface ICommand
+//{
+//    void Execute();
+//}
+
+//Spent some time learning and figuring out how to use this command line parser library
+public class SomeOptions
+{
+    [Option('i', "in", Required = true, HelpText = "Set input path for the generated file.")]
+    public string? In { get; set; }
+
+    [Option('o', "out", Required = true, HelpText = "Set output path for the generated file.")]
+    public string? Out { get; set; }
+}
+
+//[Verb("in", HelpText = "where the file is located")]
+//public class InputCommand : ICommand
+//{
+//    [Option('i', "inPutPath", Required = true, HelpText = "Set input path for the generated file.")]
+//    public string? InputPath { get; set; }
+//    public void Execute()
+//    {
+//        Console.WriteLine("Executing Input");
+//    }
+//}
+
+//[Verb("out", HelpText = "where the file is outputted to")]
+//public class OutputCommand : ICommand
+//{
+//    [Option('o', "outPutPath", Required = true, HelpText = "Set output path for the generated file.")]
+
+//    public string? OutputPath { get; set; }
+//    public void Execute()
+//    {
+//        Console.WriteLine("Executing Output");
+//    }
+//}
 internal class CardGame
 {
+    public static SomeOptions options { get; private set; }
+
     private static void Main(string[] args)
     {
+        //Parser.Default.ParseArguments<InputCommand, OutputCommand>(args)
+        //.WithParsed<ICommand>(t => t.Execute());
+        Parser.Default.ParseArguments<SomeOptions>(args)
+        .WithParsed(parsed => options = parsed);
+
         try
         {
             //Reading all the lines in the CardPlayers.txt file
             string[] lines = File.ReadAllLines(@"C:\Users\Matthew\Desktop\CardPlayers.txt");
-            //Console.WriteLine("Contents of CardPlayers.txt = ");
             int winnerScore = 0;
             string winnerName = "";
             int winnerSuitScore = 0;
             int suitScore = 0;
             var player = "";
 
-
             var items = new List<object>();
-            //string[] playerWinner = lines;
-            var faceValue = new List<object>();
-            var firstPlayer = new List<object>();
             var tiePlayer = new List<object>();
 
             foreach (string line in lines)
@@ -35,30 +78,18 @@ internal class CardGame
                 var cards = line.ToUpper().Substring(line.IndexOf(':') + 1).Split(',').ToList();
                 int playerScore = CardGame.CalculateScore(cards);
                 suitScore = CardGame.CalculateSuit(cards);
-                //string[] playerWinner = PlayersAndHands(lines);
-
-                firstPlayer.Add(player + ": " + playerScore);
-
-                //faceValue.Add(playerScore);
 
                 if(winnerScore <= playerScore)
                 {
-                    //winnerName = player;
-                    //winnerScore = playerScore;
-                    //winnerSuitScore = suitScore;
                     if (playerScore > winnerScore)
                     {
                         winnerName = player;
                         winnerScore = playerScore;
                         winnerSuitScore = suitScore;
-                        //Console.WriteLine(winnerName + ": " + winnerScore + " SuitScore: " + winnerSuitScore);
                     }
                     else if (winnerSuitScore > suitScore && playerScore == winnerScore)
                     {
-                        //winnerName = player;
                         winnerScore = playerScore;
-                        //Console.WriteLine(winnerName + "," + player + ": " + winnerSuitScore);
-                        //winnerSuitScore = suitScore;
                     }
                     else if(playerScore == winnerScore)
                     {
@@ -67,7 +98,6 @@ internal class CardGame
                     }
                 }
             }
-            //Console.WriteLine(winnerName + ": " + winnerScore + " SuitScore: " + winnerSuitScore);
             if(winnerSuitScore > suitScore)
             {
                 Console.WriteLine(winnerName + "," + player + ": " + winnerSuitScore);
@@ -81,14 +111,12 @@ internal class CardGame
             {
                 Console.WriteLine(winnerName + ": " + winnerScore);
                 items.Add(winnerName + ": " + winnerScore);
-                //tiePlayer.Add(winnerName + "," + player + ": " + winnerSuitScore);
 
                 /* I tried to display the list of results for each player and their scores. This took me a while to get right because i tried using a foreach loop,
                  to get the data and then display it and save it to a file but then it would only save the last line of the player. So had to google quite a bit to find,
                  different answers and i finally found the join which is so simple that it didn't occure to me the first time to just join them at a new line.
                 */
                 string item = string.Join("\n", items);
-                //string tie = string.Join("\n", tiePlayer);
                 string createText = "Card Game Results " + Environment.NewLine + item;
 
                 File.WriteAllText(@"C:\Users\Matthew\Desktop\CardGame.txt", createText);
@@ -101,78 +129,6 @@ internal class CardGame
             Console.WriteLine("File does not exist or cannot find the file. Please create the file with random players and their cards.", e.ToString());
             Console.WriteLine("Press any key to exit.");
         }
-        //int winnerScore = 0;
-        //string winnerName = "";
-        //int winnerSuitScore = 0;
-        //int playerScore = CardGame.CalculateScore(cards);
-        //int suitScore = CardGame.CalculateSuit(cards);
-
-        //if (winnerScore <= playerScore)
-        //        {
-        //            if(winnerScore == playerScore)
-        //            {
-        //                if(winnerSuitScore <= suitScore)
-        //                {
-        //                    winnerName = player;
-        //                    winnerSuitScore = suitScore;
-        //                    winnerScore = playerScore;
-        //                }                        
-        //            }
-        //            else
-        //            {
-        //                winnerName = player;
-        //                winnerScore= playerScore;
-
-        //            }
-        //            if(playerScore == suitScore)
-        //            {
-
-        //                Console.WriteLine(player + "," + player);
-        //            }
-        //        }
-
-
-
-
-        //if (winnerScore == playerScore && (suitScore < playerScore))
-        //{
-        //    winnerName = player;
-        //}
-        //else if (winnerScore < playerScore)
-        //{
-        //    winnerName = player;
-        //    winnerScore = playerScore;
-        //}
-        //if (winnerScore == playerScore)
-        //{
-        //    winnerName = winnerName + "," + player;
-        //}
-        //else
-        //{
-        //    winnerName = player;
-        //}
-        //winnerScore = playerScore;
-        //if (winnerScore <= win)
-        //{
-        //    if (winnerScore == win)
-        //    {
-        //        winnerName = winnerName + "," + player;
-        //    }
-        //    else 
-        //    { 
-        //        winnerName = player; 
-        //    }
-        //    win = winnerScore;
-        //    actualWinner = CardGame.CalculateWinner(cards);
-        //    if (actualWinner.Equals(actualWinner))
-        //    {
-
-        //        Console.WriteLine(winnerName + ": It is a tie.");
-        //        Console.WriteLine(actualWinner);
-        //    }
-        //}
-
-
     }
 
     private static int CalculateScore(List<string> cards)
