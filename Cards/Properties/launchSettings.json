@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Cards": {
+      "commandName": "Project",
+      "commandLineArgs": "--in Players.txt , --out winner.txt"
+    }
+  }
+}
